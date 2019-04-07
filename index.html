@@ -29,7 +29,7 @@
 <body>
 	<div class="row">
 		<!-- <p id="logger"></p> --->
-		<div id="progress1">
+		<div id="progress1" class="progress">
 			<div class="progress-chunk" id="1p15"></div>
 			<div class="progress-chunk" id="1p14"></div>
 			<div class="progress-chunk" id="1p13"></div>
@@ -69,7 +69,7 @@
 		</div>
 
 
-		<div id="progress2">
+		<div id="progress2" class="progress">
 			<div class="progress-chunk" id="2p15"></div>
 			<div class="progress-chunk" id="2p14"></div>
 			<div class="progress-chunk" id="2p13"></div>
@@ -88,7 +88,7 @@
 			<div class="progress-chunk" id="2p0"></div>
 		</div>
 
-		<div id="progress3">
+		<div id="progress3" class="progress">
 			<div class="progress-chunk" id="3p15"></div>
 			<div class="progress-chunk" id="3p14"></div>
 			<div class="progress-chunk" id="3p13"></div>
@@ -108,6 +108,8 @@
 		</div>
 
 	</div>
+	<br>
+	<div class="row">
 	<select id ="songSelect" onchange="select_song()">
 		<option value="C Major Arpeggio" >C Major Arpeggio</option>
 		<option value="Green Hill Zone 1">Green Hill Zone 1</option>
@@ -121,10 +123,12 @@
 	</select>
 	<button id="resetBtn" onclick="reset_history()">Reset</button> 
 	<button id="gradeBtn"onclick="grade()">Grade</button> 
+	</div>
 
 	<script>		
 	
 	const limit = 16;
+	const lighten_amt = 150;
 
 	const songbook = {
 		'C Major Arpeggio': [60, 64, 67, 71, 72, 71, 67, 64, 60],
@@ -142,7 +146,6 @@
 	var progress_index_running = 0;
 	var song_index = 0;
 	var song = null;
-	select_song()
 	var graded = false;
 	var progress = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
 
@@ -152,8 +155,6 @@
 		song = songbook[song_val]
 		reset_history();
 	}
-
-
 
 	const key_to_midi = {
 		'a':[60,'C'],
@@ -213,6 +214,9 @@
 		"#ff004d"
 	]
 
+	
+	select_song()
+
 	// https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
 	function lighten_hex_color(col, amt) {
 		var usePound = false;
@@ -259,10 +263,11 @@
 		song_index = 0;
 		progress = [];
 		graded = false;
-		for(var j = 1; j < 4; j++)
+		for(var j = 1; j < 3; j++)
 		{
 			for(var i = 0; i < limit; i++){
-				set_progress_chunk(i, 'white', j);
+				set_progress_chunk(i, lighten_hex_color(progress_colors[i], lighten_amt), j);
+				set_progress_chunk(i, "#23170d", 3);
 			}
 		}
 	}
@@ -274,6 +279,7 @@
 			element.css('background-color', color);
 		}
 	}
+
 
 	window.onload = function () {
 		MIDI.loadPlugin({
@@ -324,11 +330,10 @@
 		if(key == 'z'){
 			if(song_index > 0){
 				song_index--;
-				set_progress_chunk(song_index, "white", 1);
+				set_progress_chunk(song_index, lighten_hex_color(progress_colors[song_index], lighten_amt), 1);
 			}
 		}
 		else if(key == 'x'){
-			
 			if(song_index < song.length){
 				play_note(song[song_index % limit]);
 				set_progress_chunk(song_index, progress_colors[song_index], 1);
@@ -339,7 +344,7 @@
 			if(progress_index > 0){
 				release_key(progress[progress_index-1])
 				progress_index--;
-				set_progress_chunk(progress_index, "white", 2);
+				set_progress_chunk(progress_index, lighten_hex_color(progress_colors[progress_index], lighten_amt), 2);
 			}
 		}
 		else if(key == '.'){
@@ -384,6 +389,14 @@
 			$(this).val(real_note);
 		}
 	});
+
+	$(document).ready(function() {
+		for(var i = 0; i < limit; i++) {
+			set_progress_chunk(i, lighten_hex_color(progress_colors[i], lighten_amt), 2);
+			set_progress_chunk(i, lighten_hex_color(progress_colors[i], lighten_amt), 1);
+		}
+	});
+
 	</script>
 </body>
 </html>
