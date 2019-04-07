@@ -23,11 +23,12 @@
 	<script src="jquery-3.3.1.js"></script>
 	<link rel="stylesheet" type="text/css" href="keyboard.css">
 	<link rel="stylesheet" type="text/css" href="progress.css">
+	<link rel="stylesheet" type="text/css" href="main.css">
 
 </head>
 <body>
 	<div class="row">
-
+		<!-- <p id="logger"></p> --->
 		<div id="progress1">
 			<div class="progress-chunk" id="1p15"></div>
 			<div class="progress-chunk" id="1p14"></div>
@@ -107,24 +108,52 @@
 		</div>
 
 	</div>
-	<button onclick="reset_history()">Reset</button> 
-	<button onclick="grade()">Grade</button> 
+	<select id ="songSelect" onchange="select_song()">
+		<option value="C Major Arpeggio" >C Major Arpeggio</option>
+		<option value="Green Hill Zone 1">Green Hill Zone 1</option>
+		<option value="Green Hill Zone 2">Green Hill Zone 2</option>
+		<option value="When You Sleep Melody">When You Sleep Melody</option>
+		<option value="When You Sleep Verse 1">When You Sleep Verse 1</option>
+		<option value="SSBU Theme 1">SSBU Theme 1</option>
+		<option value="SSBU Theme 2">SSBU Theme 2</option>
+		<option value="The Promise">The Promise</option>
+		<option value="On a Clear Day">On a Clear Day</option>
+	</select>
+	<button id="resetBtn" onclick="reset_history()">Reset</button> 
+	<button id="gradeBtn"onclick="grade()">Grade</button> 
 
-	<script>
-	var progress_index = 0
+	<script>		
+	
+	const limit = 16;
+
+	const songbook = {
+		'C Major Arpeggio': [60, 64, 67, 71, 72, 71, 67, 64, 60],
+		'Green Hill Zone 1': [72, 69, 72, 71, 72, 71, 67, 67, 76, 74, 72, 71, 72, 71, 67],
+		'Green Hill Zone 2': [72, 69, 72, 71, 72, 71, 67, 69, 69, 65, 69, 67, 69, 67, 64],
+		'When You Sleep Melody': [71, 72, 71, 67, 64, 65, 64, 60],
+		'When You Sleep Verse 1': [67, 69, 67, 65, 64, 60, 67, 65, 64, 62, 64, 60, 64, 64, 62, 64],
+		'SSBU Theme 1': [62, 64, 65, 62, 65, 72, 71, 69, 69, 71, 67],
+		'SSBU Theme 2': [70, 69, 67, 65, 67, 69, 67, 65, 67, 64],
+		'The Promise': [60, 62, 65, 64, 62, 60, 67],
+		'On a Clear Day': [65, 67, 68, 70, 69, 72, 70, 67, 66, 68, 67, 62, 63, 65, 63]
+	}
+
+	var progress_index = 0;
+	var progress_index_running = 0;
 	var song_index = 0;
-
-	const num_progress_chunks = 16;
-
-	const song1 = [60, 64, 67, 71, 72, 71, 67, 64, 60]
-	const song2 = [72, 69, 72, 71, 72, 71, 67, 69, 69, 65, 69, 67, 69, 67, 64]
-	const song3 = [71, 72, 71, 67, 64, 65, 64, 60]
-
+	var song = null;
+	select_song()
 	var graded = false;
-
-	var song = song2;
-
 	var progress = [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1]
+
+
+	function select_song(){
+		song_val = document.getElementById("songSelect").value;
+		song = songbook[song_val]
+		reset_history();
+	}
+
+
 
 	const key_to_midi = {
 		'a':[60,'C'],
@@ -166,23 +195,22 @@
 	]
 
 	const progress_colors = [
-	 "#ff0000",
-	 "#ff4d00",
-	 "#ff9900",
-	 "#ffe500",
-	 "#ccff00",
-	 "#80ff00",
-	 "#33ff00",
-	 "#00ffff",
-	 "#00b3ff",
-	 "#0066ff",
-	 "#001aff",
-	 "#3300ff",
-	 "#7f00ff",
-	 "#cc00ff",
-	 "#ff00e6",
-	 "#ff0099",
-	 "#ff004d"
+		"#ff0000",
+		"#ff4d00",
+		"#ff9900",
+		"#ffe500",
+		"#ccff00",
+		"#80ff00",
+		"#33ff00",
+		"#00ffff",
+		"#00b3ff",
+		"#0066ff",
+		"#001aff",
+		"#3300ff",
+		"#7f00ff",
+		"#cc00ff",
+		"#ff00e6",
+		"#ff004d"
 	]
 
 	// https://stackoverflow.com/questions/5560248/programmatically-lighten-or-darken-a-hex-color-or-rgb-and-blend-colors
@@ -193,9 +221,9 @@
 			usePound = true;
 		}
 
-		var num = parseInt(col,16);
+		var num = parseInt(col,limit);
 
-		var r = (num >> 16) + amt;
+		var r = (num >> limit) + amt;
 
 		if ( r > 255 ) r = 255;
 		else if  (r < 0) r = 0;
@@ -210,7 +238,7 @@
 		if ( g > 255 ) g = 255;
 		else if  ( g < 0 ) g = 0;
 
-		return (usePound?"#":"") + (g | (b << 8) | (r << 16)).toString(16);
+		return (usePound?"#":"") + (g | (b << 8) | (r << limit)).toString(limit);
 	}
 
 	function grade() {
@@ -233,14 +261,14 @@
 		graded = false;
 		for(var j = 1; j < 4; j++)
 		{
-			for(var i = 0; i < num_progress_chunks; i++){
+			for(var i = 0; i < limit; i++){
 				set_progress_chunk(i, 'white', j);
 			}
 		}
 	}
 
 	function set_progress_chunk(index, color, p_index) {
-		if(index < num_progress_chunks) {
+		if(index < limit) {
 			var element_id = '#' + String(p_index) + 'p' + String(index);
 			var element = $(element_id);
 			element.css('background-color', color);
@@ -269,7 +297,13 @@
 	function depress_key(midi_note) {
 		var key_id = '#m' + String(midi_note);
 		var key_element = $(key_id);
-		key_element.css("background-color", lighten_hex_color(progress_colors[progress_index % 16], 25));
+		if(progress_index == limit){
+			key_element.css("background-color", lighten_hex_color(progress_colors[progress_index_running % limit], 25));
+		}
+		else {
+			key_element.css("background-color", lighten_hex_color(progress_colors[progress_index % limit], 25));
+		}
+		progress_index_running++;
 	}
 
 	function release_key(midi_note) {
@@ -296,31 +330,28 @@
 		else if(key == 'x'){
 			
 			if(song_index < song.length){
-				play_note(song[song_index % 16]);
+				play_note(song[song_index % limit]);
 				set_progress_chunk(song_index, progress_colors[song_index], 1);
 				song_index++;
 			}
 		}
 		else if(key == ','){
 			if(progress_index > 0){
+				release_key(progress[progress_index-1])
 				progress_index--;
 				set_progress_chunk(progress_index, "white", 2);
 			}
 		}
 		else if(key == '.'){
-			var num_real = 0;
-			for(var i = 0; i < progress.length; i++)
-			{
-				if(progress[i] != -1){
-					num_real++
-				}
+
+			play_note(progress[progress_index]);
+			set_progress_chunk(progress_index, progress_colors[progress_index], 2);
+			depress_key(progress[progress_index])
+			if(progress[progress_index] != progress[progress_index-1]){
+				release_key(progress[progress_index-1])
 			}
-			if(progress_index < num_real){
-				play_note(progress[progress_index % 16]);
-				set_progress_chunk(progress_index, progress_colors[progress_index], 2);
-				if(progress_index < 16){ 
-					progress_index++;
-				}
+			if(progress_index < limit){ 
+				progress_index++;
 			}
 		}
 		else {
@@ -328,21 +359,19 @@
 			if(note_data != undefined) {
 				var midi_note = note_data[0];
 				var real_note = note_data[1];
-				if(progress_index < 16)
-				{
-					progress[progress_index] = midi_note
-					if(!graded){
-						set_progress_chunk(progress_index, progress_colors[progress_index], 2);
-					}
-					progress_index++;
-				}
 				depress_key(midi_note)
 				play_note(midi_note);
 				$('#logger').append(String(midi_note) + ', ')
+				if(progress_index < limit)
+				{
+					if(!graded){
+						progress[progress_index] = midi_note
+						set_progress_chunk(progress_index, progress_colors[progress_index], 2);
+						progress_index++;
+					}
+				}
 			}
 		}
-
-		console.log(progress)
 	});
 
 	$(document).keyup(function(e){
