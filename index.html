@@ -27,6 +27,7 @@
 
 </head>
 <body>
+	<div id="center">
 	<div class="row">
 		<!-- <p id="logger"></p> --->
 		<div id="progress1" class="progress">
@@ -109,20 +110,22 @@
 
 	</div>
 	<br>
-	<div class="row">
-	<select id ="songSelect" onchange="select_song()">
-		<option value="C Major Arpeggio" >C Major Arpeggio</option>
-		<option value="Green Hill Zone 1">Green Hill Zone 1</option>
-		<option value="Green Hill Zone 2">Green Hill Zone 2</option>
-		<option value="When You Sleep Melody">When You Sleep Melody</option>
-		<option value="When You Sleep Verse 1">When You Sleep Verse 1</option>
-		<option value="SSBU Theme 1">SSBU Theme 1</option>
-		<option value="SSBU Theme 2">SSBU Theme 2</option>
-		<option value="The Promise">The Promise</option>
-		<option value="On a Clear Day">On a Clear Day</option>
-	</select>
-	<button id="resetBtn" onclick="reset_history()">Reset</button> 
-	<button id="gradeBtn"onclick="grade()">Grade</button> 
+	<div class="row" id="controls">
+		<select id ="songSelect" onchange="select_song()">
+			<option value="C Major Arpeggio" >C Major Arpeggio</option>
+			<option value="Green Hill Zone 1">Green Hill Zone 1</option>
+			<option value="Green Hill Zone 2">Green Hill Zone 2</option>
+			<option value="When You Sleep Melody">When You Sleep Melody</option>
+			<option value="When You Sleep Verse 1">When You Sleep Verse 1</option>
+			<option value="SSBU Theme 1">SSBU Theme 1</option>
+			<option value="SSBU Theme 2">SSBU Theme 2</option>
+			<option value="The Promise">The Promise</option>
+			<option value="On a Clear Day">On a Clear Day</option>
+		</select>
+		<span id="accent"></span>
+		<button id="resetBtn" onclick="reset_history()">Reset</button> 
+		<button id="gradeBtn"onclick="grade()">Grade</button> 
+	</div>
 	</div>
 
 	<script>		
@@ -174,6 +177,26 @@
 		'l':[74,'D'],
 		'p':[75,'D#'],
 		';':[76,'E']
+	}
+
+	const midi_to_note = {
+		'60': 'C',
+		'61': 'C#',
+		'62': 'D',
+		'63': 'D#',
+		'64': 'E',
+		'65': 'F',
+		'66': 'F#',
+		'67': 'G',
+		'68': 'G#',
+		'69': 'A',
+		'70': 'Bb',
+		'71': 'B',
+		'72': 'C',
+		'73': 'C#',
+		'74': 'D',
+		'75': 'D#',
+		'76': 'E'
 	}
 
 	const progress_colors_old = [
@@ -270,6 +293,7 @@
 				set_progress_chunk(i, "#23170d", 3);
 			}
 		}
+		$('#accent').text("");
 	}
 
 	function set_progress_chunk(index, color, p_index) {
@@ -377,6 +401,13 @@
 				}
 			}
 		}
+		
+		var notes = "";
+		for(var i = 0; i < progress.length; i++){
+			var note = progress[i];
+			notes = notes +  midi_to_note[String(note)] + ' ';
+		}
+		$('#accent').text(notes);
 	});
 
 	$(document).keyup(function(e){
