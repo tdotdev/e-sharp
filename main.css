@@ -1,4 +1,4 @@
-@import url(//db.onlinewebfonts.com/c/b2e75c336df191233b3096682c9ee6be?family=PixelarRegularW01-Regular);
+
 
 .row {
     margin: auto;
@@ -7,6 +7,7 @@
 
 body {
     background-color: black;
+    /* background-image: url("source.gif"); */
 }
 
 #songSelect {
@@ -25,8 +26,7 @@ body {
     font-family: monaco,Consolas,Lucida Console,monospace;
     font-size: 10pt;
     font-weight: bold;
-    font-smooth: never;
-    -webkit-font-smoothing : none;
+    color: whitesmoke;
     display: inline-block;
     position: absolute;
     width: 360px;
@@ -102,8 +102,13 @@ body {
 }
 
 #center {
+    margin-left: 25%;
+    margin-top: 10%;
     position: fixed;
     padding-top: 20px;
     background-color: #3d2817;
     padding-bottom: 10px;
+    border-style: solid;
+    border-width: 3px;
+    border-color: #23170d;
 }

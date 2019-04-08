@@ -111,7 +111,7 @@
 	</div>
 	<br>
 	<div class="row" id="controls">
-		<select id ="songSelect" onchange="select_song()">
+		<select id ="songSelect" onchange="select_song()" onkeydown="IgnoreAlpha(event);"> 
 			<option value="C Major Arpeggio" >C Major Arpeggio</option>
 			<option value="Green Hill Zone 1">Green Hill Zone 1</option>
 			<option value="Green Hill Zone 2">Green Hill Zone 2</option>
@@ -129,6 +129,18 @@
 	</div>
 
 	<script>		
+
+	// https://stackoverflow.com/questions/1227146/disable-keyboard-in-html-select-tag
+	function IgnoreAlpha(e) {
+		if (!e) {
+			e = window.event;
+		}
+		if (e.keyCode >= 65 && e.keyCode <= 90) // A to Z
+		{
+			e.returnValue = false;
+			e.cancel = true;
+		}
+	}
 	
 	const limit = 16;
 	const lighten_amt = 150;
